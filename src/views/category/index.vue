@@ -1,10 +1,5 @@
 <template>
   <div class="app-container">
-
-    <el-tag style="margin-bottom:20px;">
-      <a href="https://github.com/PanJiaChen/vue-element-admin/tree/master/src/components/TreeTable" target="_blank">Documentation</a>
-    </el-tag>
-
     <tree-table :data="data" :evalFunc="func" :evalArgs="args" :expandAll="expandAll" border>
       <el-table-column label="分类名称">
         <template slot-scope="scope">
@@ -86,7 +81,7 @@
   Auth: Lei.j1ang
   Created: 2018/1/19-14:54
 */
-import { categoryList, modifyCategoryStatus, addCategory } from '@/api/category'
+import { categoryList, modifyCategoryStatus, addCategory, upCategory } from '@/api/category'
 import treeTable from '@/components/TreeTable'
 import treeToArray from './customEval'
 import Upload from '@/components/Upload/singleImage2'
@@ -97,7 +92,7 @@ export default {
   data() {
     return {
       func: treeToArray,
-      expandAll: false,
+      expandAll: true,
       data:[],
       args: [null, null, 'timeLine'],
       textMap: {
@@ -217,7 +212,6 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           addCategory(this.temp).then(() => {
-            this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -225,13 +219,22 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.temp = {
+        id: row.id,
+        parentId: row.parentId,
+        parentName: row.parentName,
+        icon: row.icon,
+        name: row.name,
+        paixu: row.paixu,
+        status: row.status,
+        remark: row.remark
+      }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -241,16 +244,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
+          upCategory(this.temp).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -258,20 +252,10 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
       })
-    },
-    handleAvatarSuccess(res, file) {
-        this.temp.icon = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file) {
-      const isLt3M = file.size / 1024 / 1024 < 3;
-
-      if (!isLt3M) {
-        this.$message.error('上传图片大小不能超过 3MB!');
-      }
-      return isLt3M;
     }
   }
 }

@@ -4,56 +4,9 @@
 
       <sticky :className="'sub-navbar '+postForm.status">
         <template v-if="fetchSuccess">
-
-          <router-link style="margin-right:15px;" v-show='isEdit' :to="{ path:'create-form'}">
-            <el-button type="info">创建form</el-button>
-          </router-link>
-
-          <el-dropdown trigger="click">
-            <el-button plain>{{!postForm.comment_disabled?'评论已打开':'评论已关闭'}}
-              <i class="el-icon-caret-bottom el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu class="no-padding" slot="dropdown">
-              <el-dropdown-item>
-                <el-radio-group style="padding: 10px;" v-model="postForm.comment_disabled">
-                  <el-radio :label="true">关闭评论</el-radio>
-                  <el-radio :label="false">打开评论</el-radio>
-                </el-radio-group>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-
-          <el-dropdown trigger="click">
-            <el-button plain>平台
-              <i class="el-icon-caret-bottom el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu class="no-border" slot="dropdown">
-              <el-checkbox-group v-model="postForm.platforms" style="padding: 5px 15px;">
-                <el-checkbox v-for="item in platformsOptions" :label="item.key" :key="item.key">
-                  {{item.name}}
-                </el-checkbox>
-              </el-checkbox-group>
-            </el-dropdown-menu>
-          </el-dropdown>
-
-          <el-dropdown trigger="click">
-            <el-button plain>
-              外链
-              <i class="el-icon-caret-bottom el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu class="no-padding no-border" style="width:300px" slot="dropdown">
-              <el-form-item label-width="0px" style="margin-bottom: 0px" prop="source_uri">
-                <el-input placeholder="请输入内容" v-model="postForm.source_uri">
-                  <template slot="prepend">填写url</template>
-                </el-input>
-              </el-form-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-
           <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm()">发布
           </el-button>
           <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button>
-
         </template>
         <template v-else>
           <el-tag>发送异常错误,刷新页面,或者联系程序员</el-tag>
@@ -65,59 +18,124 @@
         <el-row>
           <el-col :span="21">
             <el-form-item style="margin-bottom: 40px;" prop="title">
-              <MDinput name="name" v-model="postForm.title" required :maxlength="100">
-                标题
+              <MDinput name="name" v-model="postForm.goodsname" required :maxlength="100">
+                商品名称
               </MDinput>
-              <span v-show="postForm.title.length>=26" class='title-prompt'>app可能会显示不全</span>
+              <span v-show="postForm.goodsname.length>=26" class='title-prompt'>app可能会显示不全</span>
             </el-form-item>
 
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
-                  <el-form-item label-width="45px" label="作者:" class="postInfo-container-item">
-                    <multiselect v-model="postForm.author" :options="userLIstOptions" @search-change="getRemoteUserList" placeholder="搜索用户" selectLabel="选择"
-                      deselectLabel="删除" track-by="key" :internalSearch="false" label="key">
-                      <span slot='noResult'>无结果</span>
-                    </multiselect>
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="8">
-                  <el-tooltip class="item" effect="dark" content="将替换作者" placement="top">
-                    <el-form-item label-width="50px" label="来源:" class="postInfo-container-item">
-                      <el-input placeholder="将替换作者" style='min-width:150px;' v-model="postForm.source_name">
-                      </el-input>
-                    </el-form-item>
-                  </el-tooltip>
-                </el-col>
-
-                <el-col :span="8">
-                  <el-form-item label-width="80px" label="发布时间:" class="postInfo-container-item">
-                    <el-date-picker v-model="postForm.display_time" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
-                    </el-date-picker>
+                  <el-form-item label-width="45px" label="分类:" class="postInfo-container-item">
+                    <el-tag
+                      v-if='postForm.categoryid!=""'
+                      :key="postForm.categoryid"
+                      closable
+                      :disable-transitions="false"
+                      @close="handleCategoryClose">
+                      {{postForm.categoryName}}
+                    </el-tag>
+                    <el-button v-else class="button-new-tag" size="small" @click="showCategoryDialog">选择分类</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
             </div>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label-width="45px" label="价格:" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" v-model="postForm.price" style="width:180px">
+                <template slot="append">元</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
 
+          <el-col :span="8">
+            <el-form-item label-width="60px" label="市场价:" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" style='width:180px' v-model="postForm.marketprice">
+                <template style="width:25px" slot="append">元</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item label-width="60px" label="进货价:" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" style='width:180px' v-model="postForm.purchaserprice">
+                <template slot="append">元</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label-width="45px" label="库存:" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" v-model="postForm.price" style="width:180px">
+                <template slot="append">件</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="16">
+            <el-form-item label-width="60px" label="运费:" class="postInfo-container-item">
+              <el-checkbox v-model="logisticsCheck" label="收取运费" border></el-checkbox>
+              <el-input placeholder="请输入运费"  style='width:180px' v-if="logisticsCheck == true" v-model="postForm.logistics">
+                <template slot="append">元</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label-width="45px" label="作者:" class="postInfo-container-item">
+              <el-input placeholder="制作商" v-model="postForm.manufactory" style="width:180px">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="16">
+            <el-form-item label-width="60px" label="产地:" class="postInfo-container-item">
+              <el-input placeholder="产地" v-model="postForm.producingarea" >
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
-          <el-input type="textarea" class="article-textarea" :rows="1" autosize placeholder="请输入内容" v-model="postForm.content_short">
+          <el-input type="textarea" class="article-textarea" :rows="1" autosize placeholder="请输入内容" v-model="postForm.subtitle">
           </el-input>
           <span class="word-counter" v-show="contentShortLength">{{contentShortLength}}字</span>
         </el-form-item>
 
+        <el-upload
+          action="http://api.zhanghaihe.com/api/v2.0/uploadImg.ajax"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove">
+          <i class="el-icon-plus"></i>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+        <br>
         <div class="editor-container">
-          <tinymce :height=400 ref="editor" v-model="postForm.content"></tinymce>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-          <Upload v-model="postForm.image_uri"></Upload>
+          <tinymce :height=1200 ref="editor" v-model="postForm.description"></tinymce>
         </div>
       </div>
     </el-form>
 
+    <el-dialog title="分类选择" :visible.sync="dialogCategoryFormVisible">
+      <el-input placeholder="输入关键字进行过滤" v-model="filterCategoryText"></el-input>
+      <el-tree :data="categoryListData" :props="categoryProps"
+        :filter-node-method="filterCategoryNode"
+        show-checkbox
+        @check-change='handleCategoryChecked'
+        :highlight-current='highlightCurrent'
+        node-key="id"
+        ref="treeCategory"></el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogCategoryFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleCategoryForm">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -131,17 +149,28 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
 import { fetchArticle } from '@/api/article'
 import { userSearch } from '@/api/remoteSearch'
+import { categoryListShow } from '@/api/category'
 
 const defaultForm = {
-  status: 'draft',
-  title: '', // 文章题目
-  content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  source_name: '', // 文章外部作者
-  display_time: undefined, // 前台展示时间
-  id: undefined,
+  goodsname: '',
+  categoryid: '',
+  categoryName: '',
+  subtitle: '',
+  price: '',
+  marketprice: '',
+  purchaserprice: '',
+  storedcount: '',
+  pics: '',
+  pic: '',
+  manufactory: '',
+  producingarea: '',
+  description: '',
+  remark: '',
+  logisticsId: '',
+  logistics: '',
+  state: '',
+  paixu: '',
+  goodsid: undefined,
   platforms: ['a-platform'],
   comment_disabled: false
 }
@@ -153,6 +182,11 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    }
+  },
+  watch: {
+    filterCategoryText(val) {
+      this.$refs.treeCategory.filter(val);
     }
   },
   data() {
@@ -183,6 +217,17 @@ export default {
       }
     }
     return {
+      dialogCategoryFormVisible:false,
+      filterCategoryText:'',
+      categoryListData:[],
+      highlightCurrent:true,
+      categoryProps: {
+          children: 'children',
+          label: 'name'
+      },
+      logisticsCheck: false,
+      dialogImageUrl: '',
+      dialogVisible: false,
       postForm: Object.assign({}, defaultForm),
       fetchSuccess: true,
       loading: false,
@@ -202,7 +247,7 @@ export default {
   },
   computed: {
     contentShortLength() {
-      return this.postForm.content_short.length
+      return 100
     }
   },
   created() {
@@ -213,6 +258,51 @@ export default {
     }
   },
   methods: {
+    handleCategoryClose(){
+      this.postForm.categoryid = ''
+      this.postForm.categoryName = ''
+    },
+    handleCategoryForm(){
+      if(this.$refs.treeCategory.getCheckedNodes()){
+        console.log(this.$refs.treeCategory.getCheckedNodes()[0].name);
+        this.postForm.categoryid = this.$refs.treeCategory.getCheckedNodes()[0].id
+        this.postForm.categoryName = this.$refs.treeCategory.getCheckedNodes()[0].name
+      }
+      this.dialogCategoryFormVisible = false
+    },
+    showCategoryDialog(){
+      this.categoryListData = []
+      this.dialogCategoryFormVisible = true
+      categoryListShow().then(response => {
+        if (response.data.code === '0') {
+          this.categoryListData = response.data.data
+        } else {
+
+        }
+      })
+    },
+    filterCategoryNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
+    },
+    handleCategoryChecked(value,checked){
+      if(!checked){
+        return
+      }
+      if(this.$refs.treeCategory.getCheckedNodes()){
+        for(var nodes of this.$refs.treeCategory.getCheckedNodes()){
+          this.$refs.treeCategory.setChecked(nodes.id,false)
+        }
+      }
+      this.$refs.treeCategory.setChecked(value.id,true)
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
     fetchData() {
       fetchArticle().then(response => {
         this.postForm = response.data

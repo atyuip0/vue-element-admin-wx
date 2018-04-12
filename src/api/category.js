@@ -6,6 +6,12 @@ export function categoryList() {
   })
 }
 
+export function categoryListShow() {
+  return request({
+    url: '/category/listShow'
+  })
+}
+
 export function modifyCategoryStatus(data) {
   return request({
     url: '/category/modifyStatus',
