@@ -4,9 +4,8 @@
 
       <sticky :className="'sub-navbar '+postForm.status">
         <template v-if="fetchSuccess">
-          <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm()">发布
+          <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm()">保存
           </el-button>
-          <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button>
         </template>
         <template v-else>
           <el-tag>发送异常错误,刷新页面,或者联系程序员</el-tag>
@@ -17,7 +16,7 @@
       <div class="createPost-main-container">
         <el-row>
           <el-col :span="21">
-            <el-form-item style="margin-bottom: 40px;" prop="title">
+            <el-form-item style="margin-bottom: 40px;" prop="goodsname">
               <MDinput name="name" v-model="postForm.goodsname" required :maxlength="100">
                 商品名称
               </MDinput>
@@ -26,8 +25,8 @@
 
             <div class="postInfo-container">
               <el-row>
-                <el-col :span="8">
-                  <el-form-item label-width="45px" label="分类:" class="postInfo-container-item">
+                <el-col :span="10">
+                  <el-form-item label-width="45px" label="分类:" prop="categoryid" class="postInfo-container-item">
                     <el-tag
                       v-if='postForm.categoryid!=""'
                       :key="postForm.categoryid"
@@ -45,24 +44,24 @@
         </el-row>
         <el-row>
           <el-col :span="8">
-            <el-form-item label-width="45px" label="价格:" class="postInfo-container-item">
-              <el-input placeholder="请输入价格" v-model="postForm.price" style="width:180px">
+            <el-form-item label-width="45px" label="价格:" prop="priceStr" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" v-model="postForm.priceStr" style="width:180px">
                 <template slot="append">元</template>
               </el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label-width="60px" label="市场价:" class="postInfo-container-item">
-              <el-input placeholder="请输入价格" style='width:180px' v-model="postForm.marketprice">
+            <el-form-item label-width="60px" label="市场价:" prop="marketpriceStr" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" style='width:180px' v-model="postForm.marketpriceStr">
                 <template style="width:25px" slot="append">元</template>
               </el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label-width="60px" label="进货价:" class="postInfo-container-item">
-              <el-input placeholder="请输入价格" style='width:180px' v-model="postForm.purchaserprice">
+            <el-form-item label-width="60px" label="进货价:" prop="purchaserpriceStr" class="postInfo-container-item">
+              <el-input placeholder="请输入价格" style='width:180px' v-model="postForm.purchaserpriceStr">
                 <template slot="append">元</template>
               </el-input>
             </el-form-item>
@@ -70,16 +69,16 @@
         </el-row>
         <el-row>
           <el-col :span="8">
-            <el-form-item label-width="45px" label="库存:" class="postInfo-container-item">
-              <el-input placeholder="请输入价格" v-model="postForm.price" style="width:180px">
+            <el-form-item label-width="45px" label="库存:" prop="storedcount" class="postInfo-container-item">
+              <el-input placeholder="请输入库存" v-model="postForm.storedcount" style="width:180px">
                 <template slot="append">件</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="16">
-            <el-form-item label-width="60px" label="运费:" class="postInfo-container-item">
+            <el-form-item label-width="60px" label="运费:" prop="logisticsStr" class="postInfo-container-item">
               <el-checkbox v-model="logisticsCheck" label="收取运费" border></el-checkbox>
-              <el-input placeholder="请输入运费"  style='width:180px' v-if="logisticsCheck == true" v-model="postForm.logistics">
+              <el-input placeholder="请输入运费"  style='width:180px' v-if="logisticsCheck == true" v-model="postForm.logisticsStr">
                 <template slot="append">元</template>
               </el-input>
             </el-form-item>
@@ -87,29 +86,30 @@
         </el-row>
         <el-row>
           <el-col :span="8">
-            <el-form-item label-width="45px" label="作者:" class="postInfo-container-item">
+            <el-form-item label-width="45px" label="作者:" prop="manufactory" class="postInfo-container-item">
               <el-input placeholder="制作商" v-model="postForm.manufactory" style="width:180px">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="16">
-            <el-form-item label-width="60px" label="产地:" class="postInfo-container-item">
+            <el-form-item label-width="60px" label="产地:" prop="producingarea" class="postInfo-container-item">
               <el-input placeholder="产地" v-model="postForm.producingarea" >
               </el-input>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
+        <el-form-item style="margin-bottom: 40px;" label-width="45px" prop="subtitle" label="摘要:">
           <el-input type="textarea" class="article-textarea" :rows="1" autosize placeholder="请输入内容" v-model="postForm.subtitle">
           </el-input>
           <span class="word-counter" v-show="contentShortLength">{{contentShortLength}}字</span>
         </el-form-item>
 
         <el-upload
-          action="http://api.zhanghaihe.com/api/v2.0/uploadImg.ajax"
+          action="http://api.zhanghaihe.com/v2.0/uploadImg.ajax"
           list-type="picture-card"
           :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove">
+          :on-remove="handleImgRemove"
+          :on-success="handleImgSuccess">
           <i class="el-icon-plus"></i>
         </el-upload>
         <el-dialog :visible.sync="dialogVisible">
@@ -117,7 +117,7 @@
         </el-dialog>
         <br>
         <div class="editor-container">
-          <tinymce :height=1200 ref="editor" v-model="postForm.description"></tinymce>
+          <tinymce :height=1200 ref="editor" prop="description" v-model="postForm.description"></tinymce>
         </div>
       </div>
     </el-form>
@@ -146,9 +146,10 @@ import MDinput from '@/components/MDinput'
 import Multiselect from 'vue-multiselect'// 使用的一个多选框组件，element-ui的select不能满足所有需求
 import 'vue-multiselect/dist/vue-multiselect.min.css'// 多选框组件css
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { validateURL } from '@/utils/validate'
+import { validateMoney } from '@/utils/validate'
+import { getQueryString } from '@/utils/url'
 import { fetchArticle } from '@/api/article'
-import { userSearch } from '@/api/remoteSearch'
+import { addGoods, getGoods } from '@/api/goods'
 import { categoryListShow } from '@/api/category'
 
 const defaultForm = {
@@ -157,22 +158,25 @@ const defaultForm = {
   categoryName: '',
   subtitle: '',
   price: '',
+  priceStr: '',
   marketprice: '',
+  marketpriceStr: '',
   purchaserprice: '',
+  purchaserpriceStr: '',
   storedcount: '',
   pics: '',
   pic: '',
+  imgFileList:[],
   manufactory: '',
   producingarea: '',
   description: '',
   remark: '',
   logisticsId: '',
-  logistics: '',
+  logistics: '0',
+  logisticsStr: '',
   state: '',
   paixu: '',
-  goodsid: undefined,
-  platforms: ['a-platform'],
-  comment_disabled: false
+  goodsid: undefined
 }
 
 export default {
@@ -192,25 +196,24 @@ export default {
   data() {
     const validateRequire = (rule, value, callback) => {
       if (value === '') {
-        this.$message({
-          message: rule.field + '为必传项',
-          type: 'error'
-        })
-        callback(null)
+        callback(new Error(this.rules[rule.field][0].message))
       } else {
         callback()
       }
     }
-    const validateSourceUri = (rule, value, callback) => {
-      if (value) {
-        if (validateURL(value)) {
+    const validatePrice = (rule, value, callback) => {
+      if (validateMoney(value)) {
+        callback()
+      } else {
+        callback(new Error(this.rules[rule.field][0].message))
+      }
+    }
+    const validateLogistics = (rule, value, callback) => {
+      if (this.logisticsCheck) {
+        if (validateMoney(value)) {
           callback()
         } else {
-          this.$message({
-            message: '外链url填写不正确',
-            type: 'error'
-          })
-          callback(null)
+          callback(new Error(this.rules[rule.field][0].message))
         }
       } else {
         callback()
@@ -232,16 +235,19 @@ export default {
       fetchSuccess: true,
       loading: false,
       userLIstOptions: [],
-      platformsOptions: [
-        { key: 'a-platform', name: 'a-platform' },
-        { key: 'b-platform', name: 'b-platform' },
-        { key: 'c-platform', name: 'c-platform' }
-      ],
       rules: {
-        image_uri: [{ validator: validateRequire }],
-        title: [{ validator: validateRequire }],
-        content: [{ validator: validateRequire }],
-        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
+        goodsname: [{ validator: validateRequire, message: "请填写商品名称" }],
+        categoryid: [{ validator: validateRequire, message: "请选择商品分类" }],
+        subtitle: [{ validator: validateRequire, message: "请填写商品副标题" }],
+        priceStr: [{ validator: validatePrice, message: "请填写商品价格" }],
+        marketpriceStr: [{ validator: validatePrice, message: "请填写商品市场价" }],
+        purchaserpriceStr: [{ validator: validatePrice, message: "请填写商品进货价" }],
+        storedcount: [{ validator: validateRequire, message: "请填写商品库存" }],
+        manufactory: [{ validator: validateRequire, message: "请填写制作商" }],
+        producingarea: [{ validator: validateRequire, message: "请填写产地" }],
+        description: [{ validator: validateRequire, message: "请填写详情" }],
+        logisticsStr: [{ validator: validateLogistics, message: "请填写运费" }]
+
       }
     }
   },
@@ -296,64 +302,74 @@ export default {
       }
       this.$refs.treeCategory.setChecked(value.id,true)
     },
-    handleRemove(file, fileList) {
+    handleImgRemove(file, fileList) {
+      this.postForm.imgFileList = fileList
       console.log(file, fileList);
+      console.log(this.dialogImageUrl);
+    },
+    handleImgSuccess(response, file, fileList){
+      this.postForm.imgFileList = fileList
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
     fetchData() {
-      fetchArticle().then(response => {
-        this.postForm = response.data
+
+      let goodsid = {
+        goodsid: getQueryString('id')
+      }
+      console.log(goodsid);
+      getGoods(goodsid).then(response => {
+        console.log(response)
+        this.postForm = response.data.data
+        if(this.postForm.logisticsId != -1) {
+          this.logisticsCheck = true;
+        }
       }).catch(err => {
         this.fetchSuccess = false
         console.log(err)
       })
     },
     submitForm() {
-      this.postForm.display_time = parseInt(this.display_time / 1000)
       console.log(this.postForm)
+      if(this.logisticsCheck){
+        this.postForm.logisticsId = 1;
+      } else {
+        this.postForm.logisticsId = -1;
+      }
+      if(this.postForm.imgFileList){
+        var pics = ''
+        for(var imgFile of this.postForm.imgFileList){
+          if( pics != '' ) {
+            pics += ','
+          } else {
+            this.postForm.pic = "http://api.zhanghaihe.com/v2.0/img/" + imgFile.response.data
+          }
+          pics = pics + "http://api.zhanghaihe.com/v2.0/img/" + imgFile.response.data
+        }
+        this.postForm.pics = pics
+      }
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$notify({
-            title: '成功',
-            message: '发布文章成功',
-            type: 'success',
-            duration: 2000
+          addGoods(this.postForm).then(response => {
+            this.$notify({
+              title: '成功',
+              message: '保存商品成功',
+              type: 'success',
+              duration: 2000
+            })
+            window.location.href = '/#/goods/index'
+            this.loading = false
+          }).catch(err => {
+            console.log(err)
+            this.loading = false
           })
-          this.postForm.status = 'published'
-          this.loading = false
         } else {
           console.log('error submit!!')
           return false
         }
-      })
-    },
-    draftForm() {
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
-        this.$message({
-          message: '请填写必要的标题和内容',
-          type: 'warning'
-        })
-        return
-      }
-      this.$message({
-        message: '保存成功',
-        type: 'success',
-        showClose: true,
-        duration: 1000
-      })
-      this.postForm.status = 'draft'
-    },
-    getRemoteUserList(query) {
-      userSearch(query).then(response => {
-        if (!response.data.items) return
-        console.log(response)
-        this.userLIstOptions = response.data.items.map(v => ({
-          key: v.name
-        }))
       })
     }
   }

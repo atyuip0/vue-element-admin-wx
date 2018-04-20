@@ -2,7 +2,7 @@
   <div class="singleImageUpload2 upload-container">
     <el-upload class="image-uploader" :data="dataObj" drag :multiple="false" :show-file-list="false"
       :headers="headers"
-      action="http://api.zhanghaihe.com/api/v2.0/uploadImg.ajax"
+      action="http://api.zhanghaihe.com/v2.0/uploadImg.ajax"
       :on-success="handleImageScucess">
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>

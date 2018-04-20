@@ -5,7 +5,7 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://api.zhanghaihe.com/api/v2.0', // api的base_url
+  baseURL: 'http://api.zhanghaihe.com/v2.0', // api的base_url
   timeout: 5000 // request timeout
 })
 

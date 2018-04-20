@@ -41,3 +41,7 @@ export function validateEmail(email) {
   return re.test(email)
 }
 
+export function validateMoney(money) {
+  const re = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/
+  return re.test(money)
+}

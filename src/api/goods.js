@@ -8,6 +8,14 @@ export function goodsList(data) {
   })
 }
 
+export function getGoods(data) {
+  return request({
+    url: '/goods/get',
+    method: 'get',
+    params:data
+  })
+}
+
 export function addGoods(data) {
   return request({
     url: '/goods/add',
